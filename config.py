@@ -4,19 +4,20 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = b'\x01v,\xd4Dq\nN[\xc2x@\\\xd0\xde\xa7'
 
-    @staticmethod
-    def init_app(app):
-        pass
-
 
 class TestingConfig(Config):
     DEBUG = True
-    SQLALCHEMY_URL = 'postgresql://postgres:password@localhost/tempdb'
+    DEVELOPMENT = True
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost/tempdb'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MARSHMALLOW_SCHEMA_DEFAULT_JIT = 'toastedmarshmallow.Jit'
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_URL = 'postgresql://postgres:password@localhost/tempdb'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost/tempdb'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MARSHMALLOW_SCHEMA_DEFAULT_JIT = 'toastedmarshmallow.Jit'
 
 
 app_config = {
