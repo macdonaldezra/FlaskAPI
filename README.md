@@ -1,8 +1,10 @@
 FlaskBase
 ---------
 
-A minimal API for logging users in and updating user accounts. API includes a model for 
-saving and updating a basic user model.
+A minimal API for logging users in and updating user accounts.
+
+FlaskBase includes a model for creating, saving and updating a basic user account.
+Project is developed to serve as a foundation for bigger projects.
 
 Testing
 -------
@@ -10,22 +12,10 @@ Testing
 The test files for this project are found in the tests directory and are implemented using
 the standard unittest module.
 
-Current Test Coverage Report:
-
-Name                 Stmts   Miss  Cover
-----------------------------------------
-auth.py                 28      3    89%
-config.py               17      0   100%
-instance/config.py       2      0   100%
-main/__init__.py         0      0   100%
-main/forms.py           11      0   100%
-main/views.py           71      7    90%
-models.py               35      3    91%
-run.py                  15      2    87%
-tests/__init__.py        0      0   100%
-tests/tests.py         122      6    95%
-----------------------------------------
-TOTAL                  301     21    93%
+Current Test Coverage Results:
+Stmts: 301
+Miss: 21
+Cover: 93%
 
 
 Installation
