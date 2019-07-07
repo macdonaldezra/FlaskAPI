@@ -1,34 +1,26 @@
-from functools import wraps
-from flask import g, request, jsonify, url_for, current_app
-from models import User, db
 import jwt
+import sys
 
-def generateToken(email):
-    return jwt.encode({'email': email}, current_app.config['PRIVATE_KEY'].encode('utf-8'), algorithm='RS256').decode('utf-8')
+from datetime import timedelta, datetime
+from functools import wraps
+from flask import g, request, jsonify, url_for, current_app, session
+from models import User
 
-def verifyToken(token):
-    try:
-        data = jwt.decode(token, current_app.config['PUBLIC_KEY'].encode('utf-8'), algorithms=['RS256'])
-    except jwt.DecodeError:
-        return None
-    except jwt.InvalidTokenError:
-        return None
-    user = User.query.filter_by(email=data['email']).first()
-    return user
+def generate_session(username):
+    session['username'] = username
 
-def tokenRequired(f):
+def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization']
-        if not token:
-            return jsonify({'errors' : 'Token is missing!'}
-                ), 401, {'Location': url_for('main.profile', _external=True)}
-        user = verifyToken(token)
-        if not user:
-            return jsonify({'errors': 'An invalid authorization token was provided.'
-                }), 401, {'Location': url_for('main.profile', _external=True)}
-        g.user = user
+        if 'username' in session:
+            user = User.query.filter_by(username=session['username']).first()
+            if user is None:
+                return jsonify({'errors': 'Invalid username was provided.'}), 401
+            g.user = user
+        else:
+            return jsonify({'errors' : 'Insufficient credentials provided.'}), 401
         return f(*args, **kwargs)
     return decorated
+
+def remove_session():
+    session.pop('username', None)
