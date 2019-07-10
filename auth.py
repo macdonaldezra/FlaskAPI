@@ -22,5 +22,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+
 def remove_session():
     session.pop('username', None)

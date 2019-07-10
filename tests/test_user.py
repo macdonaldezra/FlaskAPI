@@ -1,12 +1,10 @@
-import os
-import sys
 import json
+import sys
 import unittest
 
-from flask import current_app, request
 from werkzeug.http import parse_cookie
 from run import create_app
-from models import User, db
+from models import db, User, Client
 
 def addTestUsers():
     """Add users for login, registration, and update testing."""
@@ -14,7 +12,8 @@ def addTestUsers():
     user2 = User(username='johnmc3s', email='johnmc@gmail.com', first_name='John', last_name='Mcd', password='Newpass')
     user3 = User(username='mhird23', email='matt_hird@gmail.com', first_name='Matt', last_name='Hird', password='Passin123')
     user4 = User(username='macdonej24', email='macdonaldezra@gmail.com', first_name='Ezra', last_name='James', password='NewPass123')
-    temp_users = [user1, user2, user3, user4]
+    user5 = User(username='andrelineker3', email='andre@telus.net', first_name='Andre', last_name='Lineker', password='Pass241')
+    temp_users = [user1, user2, user3, user4, user5]
     for user in temp_users:
         try:
             user.add()
@@ -39,7 +38,7 @@ def removeTestUsers():
 
 
 class MainUserTestCase(unittest.TestCase):
-    """Class for main module test cases."""
+    """Class for main module user test cases."""
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client
@@ -129,6 +128,18 @@ class MainUserTestCase(unittest.TestCase):
         json_data = re.get_json()
         self.assertIsNotNone(json_data['errors'])
 
+    def testUpdateFirstName(self):
+        resp = self.client().post('/', json={'username': 'robmcd3', 
+                                        'password': 'Passin123'})
+        self.assertEqual(resp.status_code, 201)
+        cookie = parse_cookie(resp.headers['Set-Cookie'])
+        with self.client() as tc:
+            tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
+            r = tc.put('/profile', json={'user': {'first_name': 'Robin'}})
+            self.assertEqual(r.status_code, 202)
+            json_data = r.get_json()
+            self.assertEqual(json_data['first_name'], 'Robin')
+
     def testUpdatePassword(self):
         resp = self.client().post('/', json={'username': 'robmcd3', 
                                         'password': 'Passin123'})
@@ -152,6 +163,17 @@ class MainUserTestCase(unittest.TestCase):
             self.assertEqual(r.status_code, 422)
             json_data = r.get_json()
             self.assertIsNotNone(json_data['errors'])
+
+    def testDeleteUser(self):
+        resp = self.client().post('/', json={'username': 'andrelineker3', 'password': 'Pass241'})
+        self.assertEqual(resp.status_code, 201)
+        json_data = resp.get_json()
+        cookie = parse_cookie(resp.headers['Set-Cookie'])
+        with self.client() as tc:
+            tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
+            r = tc.delete('/profile', json={'confirm_password': 'Pass241'})
+            json_data = r.get_json()
+            self.assertEqual(r.status_code, 308)
 
     def tearDown(self):
         removeTestUsers()

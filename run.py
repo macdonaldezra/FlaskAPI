@@ -13,8 +13,8 @@ def create_app(config_name='development'):
 
         from main.views import main
         app.register_blueprint(main)
-        from file_manager.views import file_manager
-        app.register_blueprint(file_manager)
+        from manager.views import manager
+        app.register_blueprint(manager)
     return app
 
 if __name__ == '__main__':
