@@ -1,3 +1,5 @@
+import re
+
 from marshmallow import ValidationError
 
 from marshmallow.validate import Validator

@@ -1,6 +1,19 @@
+# -*- coding: utf-8 -*-
+"""Implement endpoints for user creation/login functionality and example additional features.
+
+Views are implemented using Flask's MethodView class which is designed as follows:
+    (i) Each endpoint is assigned to a given class.
+    (ii) Each endpoint's HTTP methods (ie. POST, GET, PUT, etc) are implemented as
+      class methods.
+    (iii) endpoints are registered to given classes at the end of this file.
+
+Additional Notes:
+E-mail services have not been implemented or included in testing in this implementation.
+"""
+
 from flask import Blueprint, jsonify, g, request, url_for
 from flask.views import MethodView
-from marshmallow import ValidationError, pprint, INCLUDE
+from marshmallow import ValidationError, INCLUDE
 
 # internal package imports
 from .forms import (UserSchema, UpdateUserSchema, ClientSchema, 
@@ -11,10 +24,12 @@ from models import db, User, Client, Project
 main = Blueprint('main', __name__)
 
 class LoginView(MethodView):
-    """View to deal with user login flow."""
+    """Validate a given user's and manage access to secure interface."""
     def post(self):
-        json_data = request.get_json() # get json data from post request
-        login_schema = UserSchema(exclude=('first_name', 'last_name', 'email', 'clients')) # initialize data schema
+        # get json data from post request
+        json_data = request.get_json()
+        # initialize user login schema
+        login_schema = UserSchema(exclude=['first_name', 'last_name', 'email', 'clients'])
         try: # check for errors in form data
             data = login_schema.load(json_data)
         except ValidationError as err:
@@ -30,16 +45,18 @@ class LoginView(MethodView):
         generate_session(user.username)
         return jsonify(resp_object), 201
 
+
 class LogoutView(MethodView):
-    """Resource to allow user to logout."""
+    """Remove a user's session from session table."""
     def post(self):
         remove_session()
 
+
 class RegistrationView(MethodView):
-    """View to deal with user registration flow."""
+    """Create a new user View to deal with user registration flow."""
     def post(self):
         json_data = request.get_json()
-        user_schema = UserSchema(exclude=('clients'))
+        user_schema = UserSchema(exclude=['clients'])
         try:
             data = user_schema.load(json_data)
         except ValidationError as err:
@@ -53,7 +70,7 @@ class RegistrationView(MethodView):
         except:
             return jsonify({'errors': 'Unable to add user.'}), 422
         
-        resp_object = UserSchema.dumps()
+        resp_object = user_schema.dump(user)
         generate_session(user.username)
         return jsonify(resp_object), 201
 
@@ -62,11 +79,13 @@ class HomeView(MethodView):
     decorators = [login_required]
     
     def get(self):
+        """Retrieve information about a given user to endpoint."""
         user_schema = UserSchema()
         resp_object = user_schema.dump(g.user)
         return jsonify(resp_object), 202
 
     def put(self):
+        """Update and validate a provided user's information."""
         json_input = request.get_json()
         update_schema = UpdateUserSchema(partial=True)
         try:
@@ -87,7 +106,9 @@ class HomeView(MethodView):
 
         if 'email' in data:
             g.user.generate_email_change_token(data['email'])
-            # send verification email
+
+            # send verification email to client using desired API
+
             ret_vals = user_schema.dump(g.user)
             return jsonify(ret_vals), 202
 
@@ -96,6 +117,7 @@ class HomeView(MethodView):
         return jsonify(ret_vals), 202
 
     def delete(self):
+        """Delete a user permanently from the database."""
         json_input = request.get_json()
         delete_schema = ConfirmUserPasswordSchema()
         try:
@@ -103,7 +125,7 @@ class HomeView(MethodView):
         except ValidationError as err:
             return jsonify({'errors': err.messages}), 422
         if not g.user.verify_password(data['confirm_password']):
-            return jsonify({'errors': 'Password does not match your username.'}), 422
+            return jsonify({'errors': 'Username and password do not match.'}), 422
         g.user.permanently_delete()
         remove_session()
         return jsonify({'success': 'Account has been permanently deleted.'}), 308
@@ -114,13 +136,14 @@ class ClientsView(MethodView):
     decorators = [login_required]
 
     def get(self):
+        """Retrieve a list of clients for a given user."""
         clients_schema = ClientSchema(many=True)
         clients = g.user.get_clients()
         ret_vals = clients_schema.dump(clients)
-        # make sure that returned value includes client projects
         return jsonify(ret_vals), 201
 
     def post(self):
+        """Retrieve a list of clients for a given user."""
         json_input = request.get_json()
         client_schema = ClientSchema()
         try:
@@ -140,6 +163,7 @@ class ClientsView(MethodView):
         clients = g.user.clients.all()
         ret_vals = ClientSchema().dump(clients, many=True)
         return jsonify({'clients' : ret_vals}), 201
+
 
 class ClientView(MethodView):
     """Resource to allow user to manage a client."""

@@ -1,5 +1,5 @@
-#
 settings.json
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -57,7 +57,9 @@ docs/_build/
 
 # alembic
 alembic.ini
+migrations/
 # instance folder to sensitive program data
 instance/
-
+.pytest_cache/
+.coverage
 *.DS_Store

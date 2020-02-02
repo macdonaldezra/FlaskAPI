@@ -1,9 +1,8 @@
-import jwt
-import sys
+# -*- coding: utf-8 -*-
+"""Authentication utility functions."""
 
-from datetime import timedelta, datetime
 from functools import wraps
-from flask import g, request, jsonify, url_for, current_app, session
+from flask import g, jsonify, url_for, session
 from models import User
 
 def generate_session(username):

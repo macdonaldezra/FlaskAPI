@@ -3,39 +3,14 @@ import sys
 import unittest
 
 from werkzeug.http import parse_cookie
+
 from run import create_app
 from models import db, User, Client
-
-def addTestUsers():
-    """Add users for login, registration, and update testing."""
-    user1 = User(username='robmcd3', email='robmc@gmail.com', first_name='Robert', last_name='Mcd', password='Passin123')
-    user2 = User(username='johnmc3s', email='johnmc@gmail.com', first_name='John', last_name='Mcd', password='Newpass')
-    user3 = User(username='mhird23', email='matt_hird@gmail.com', first_name='Matt', last_name='Hird', password='Passin123')
-    user4 = User(username='macdonej24', email='macdonaldezra@gmail.com', first_name='Ezra', last_name='James', password='NewPass123')
-    user5 = User(username='andrelineker3', email='andre@telus.net', first_name='Andre', last_name='Lineker', password='Pass241')
-    temp_users = [user1, user2, user3, user4, user5]
-    for user in temp_users:
-        try:
-            user.add()
-        except:
-            pass
-
-def removeTestUsers():
-    """Remove users if they are found in the database."""
-    ruser1 = User.query.filter_by(email='macdonaldezra@gmail.com').first()
-    ruser2 = User.query.filter_by(email='matt_hird@gmail.com').first()
-    ruser3 = User.query.filter_by(email='johnmac@gmail.com').first()
-    if ruser1:
-        db.session.delete(ruser1)
-        db.session.commit()
-    if ruser2:
-        db.session.delete(ruser2)
-        db.session.commit()
-    if ruser3:
-        db.session.delete(ruser3)
-        db.session.commit()
-    db.session.close()
-
+from .user_helpers import (
+                            addTestUsers,
+                            removeTestUsers, 
+                            DropAllTables
+                        )
 
 class MainUserTestCase(unittest.TestCase):
     """Class for main module user test cases."""
@@ -46,7 +21,7 @@ class MainUserTestCase(unittest.TestCase):
         self.app_context.push()
         with self.app.app_context():
             db.session.close()
-            db.drop_all()
+            # db.drop_all()
             db.create_all()
             addTestUsers()
 
@@ -56,8 +31,7 @@ class MainUserTestCase(unittest.TestCase):
                                                    'password': 'NewPass23'})
         self.assertEqual(re.status_code, 201)
         json_data = re.get_json()
-        vars = json.loads(json_data)
-        self.assertEqual(vars['username'], 'macdonejhlk')
+        self.assertEqual(json_data['username'], 'macdonejhlk')
 
 
     def testInvalidFirstNameRegistration(self):
@@ -129,10 +103,11 @@ class MainUserTestCase(unittest.TestCase):
         self.assertIsNotNone(json_data['errors'])
 
     def testUpdateFirstName(self):
-        resp = self.client().post('/', json={'username': 'robmcd3', 
+        resp = self.client().post('/', json={'username': 'mhird23', 
                                         'password': 'Passin123'})
         self.assertEqual(resp.status_code, 201)
         cookie = parse_cookie(resp.headers['Set-Cookie'])
+
         with self.client() as tc:
             tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
             r = tc.put('/profile', json={'user': {'first_name': 'Robin'}})
@@ -145,18 +120,19 @@ class MainUserTestCase(unittest.TestCase):
                                         'password': 'Passin123'})
         self.assertEqual(resp.status_code, 201)
         cookie = parse_cookie(resp.headers['Set-Cookie'])
+
         with self.client() as tc:
             tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
             r = tc.put('/profile', json={'new_password': 'NewPass21', 'user': {'password': 'Passin123'}})
+            
             self.assertEqual(r.status_code, 202)
 
     def testBadUpdatePassword(self):
         re = self.client().post('/', json={'username': 'macdonej24', 
                                                 'password': 'NewPass123'})
         self.assertEqual(re.status_code, 201)
-        json_data = re.get_json()
-
         cookie = parse_cookie(re.headers['Set-Cookie'])
+
         with self.client() as tc:
             tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
             r = tc.put('/profile', json={'new_password': 'NEsd23d', 'user': {'password': 'sdfssdsd'}})
@@ -167,8 +143,8 @@ class MainUserTestCase(unittest.TestCase):
     def testDeleteUser(self):
         resp = self.client().post('/', json={'username': 'andrelineker3', 'password': 'Pass241'})
         self.assertEqual(resp.status_code, 201)
-        json_data = resp.get_json()
         cookie = parse_cookie(resp.headers['Set-Cookie'])
+
         with self.client() as tc:
             tc.set_cookie('127.0.0.1', 'session', str(cookie['session']), path='/', domain='127.0.0.1')
             r = tc.delete('/profile', json={'confirm_password': 'Pass241'})
@@ -178,4 +154,5 @@ class MainUserTestCase(unittest.TestCase):
     def tearDown(self):
         removeTestUsers()
         db.session.remove()
+        DropAllTables(db)
         self.app_context.pop()
