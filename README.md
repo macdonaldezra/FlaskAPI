@@ -1,40 +1,9 @@
 FlaskUser v1.0
 --------------
 
-A minimal API for creating, updating, and deleting user accounts using Flask.
-
-User authentication is implemented using sessions, alternative to Flask's default
-client-side cookie implementation. Additional example functionality is added for
-managing a User's clients.
-
-
-Project Structure
------------------
-
-```bash
-├── app
-│   ├── main
-│   │   ├── __init__.py
-│   │   ├── forms.py
-│   │   ├── view.py
-│   ├── tests
-│   │   ├── __init__.py
-│   │   ├── test_clients.py
-│   │   ├── test_user.py
-│   ├── __init__.py
-│   ├── migrations
-│   ├── auth.py
-│   ├── config.py
-│   ├── custom_form.py
-│   ├── models.py
-│   ├── requirements.txt
-│   └── run.py
-└── .gitignore
-```
-
-##### main:
-Contains API endpoint files including views for logical procesing and forms for validation.
-
+An API template for Flask.
+User authentication implemented with sessions and additional example user functionality
+is added.
 
 #### Recommended structure for additional API modules:
 ```bash
@@ -45,7 +14,6 @@ Contains API endpoint files including views for logical procesing and forms for 
 │   │   ├── view.py
    ....
 ```
-
 
 Installation & Testing
 -------------------------
