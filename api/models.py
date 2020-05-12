@@ -19,10 +19,7 @@ db = SQLAlchemy()
 
 class QueryWithSoftDelete(BaseQuery):
     # Class implements soft delete feature taken from Miguel Grinberg tutorial.
-      # https://blog.miguelgrinberg.com/post/implementing-the-soft-delete-pattern-with-flask-and-sqlalchemy
-      # This class is used in the User class to provide a means of making users 
-      # non-searchable when deleted is set to true.
-      # At this point the API does not use this soft delete feature when deleting users.
+    # https://blog.miguelgrinberg.com/post/implementing-the-soft-delete-pattern-with-flask-and-sqlalchemy
     def __new__(cls, *args, **kwargs):
         obj = super(QueryWithSoftDelete, cls).__new__(cls)
         with_deleted = kwargs.pop('_with_deleted', False)
@@ -40,9 +37,9 @@ class QueryWithSoftDelete(BaseQuery):
 
 
 class User(db.Model):
-    """User contains information about a given user and includes CRUD functionality for each user.
+    """
+    User contains information about a given user and includes CRUD functionality for each user.
 
-    Features:
     * User's are identified by a unique username
     * User can be deleted permanently from database or simply removed from database returned searches
         using soft-delete.
@@ -230,8 +227,8 @@ class Client(db.Model):
         return ('<Client {}>'.format(self.name))
 
 class Project(db.Model):
-    """Projects are created and managed by a User, with respect to a Client.
-    
+    """
+    Projects are created and managed by a User, with respect to a Client.
     * A project can be deleted using soft-delete or permanent delete.
     """
 

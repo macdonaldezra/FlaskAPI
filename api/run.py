@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-"""Entry point for application."""
-
-
 from flask import Flask
 from flask_session import Session
 from models import db
@@ -15,11 +11,12 @@ def create_app(config_name='development'):
         Session(app)
         db.init_app(app)
 
-        from main.views import main
+        from main import main
+        from user import user
         app.register_blueprint(main)
+        app.register_blueprint(user)
     return app
 
 if __name__ == '__main__':
-    # Always set FLASK_ENV=development before testing
     app = create_app()
     app.run(debug=True, use_reloader=True)

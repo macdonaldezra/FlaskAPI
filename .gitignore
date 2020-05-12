@@ -62,4 +62,6 @@ migrations/
 instance/
 .pytest_cache/
 .coverage
+.vscode/
+__pycache__/
 *.DS_Store

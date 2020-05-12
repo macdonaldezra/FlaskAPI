@@ -1,5 +1,14 @@
 from models import db, User, Client, Project
 
+
+def removeTestEntries():
+    db.session.query(Project).delete()
+    db.session.query(Client).delete()
+    db.session.query(User).delete()
+    db.session.commit()
+    db.session.close()
+
+
 def addTestUsers():
     """Add users for managing clients."""
     user1 = User(username='test_user1', email='robmc@gmail.com', first_name='Robert', last_name='Mcd', password='password1')
@@ -11,17 +20,6 @@ def addTestUsers():
         except:
             pass
 
-def removeTestUsers():
-    """Remove users if they are found in the database."""
-    ruser1 = User.query.filter_by(username='test_user1').first()
-    ruser2 = User.query.filter_by(username='test_user2').first()
-    if ruser1:
-        db.session.delete(ruser1)
-        db.session.commit()
-    if ruser2:
-        db.session.delete(ruser2)
-        db.session.commit()
-    db.session.close()
 
 def addTestClients():
     """Add clients for testing."""
@@ -41,22 +39,6 @@ def addTestClients():
         except:
             pass
 
-def removeTestClients():
-    """Remove clients if they are found in the database."""
-    client1 = Client.query.filter_by(email='miscemail1@live.com', name='miscclient1').first()
-    client2 = Client.query.filter_by(email='miscemail2@live.com', name='miscclient2').first()
-    client3 = Client.query.filter_by(email='miscemail3@live.com', name='miscclient3').first()
-    client4 = Client.query.filter_by(email='miscemail3@live.com', name='miscclient1').first()
-    client5 = Client.query.filter_by(email='miscemail5@live.com', name='miscclient2').first()
-    client6 = Client.query.filter_by(email='miscemail7@live.com', name='miscclient3').first()
-    test_clients = [client1, client2, client3, client4, client5, client6]
-    for client in test_clients:
-        try:
-            db.session.delete(client)
-            db.session.commit()
-        except:
-            pass
-    db.session.close()
 
 def addTestProjects():
     """Add projects for testing."""
@@ -73,16 +55,3 @@ def addTestProjects():
         except:
             pass
 
-def removeTestProjects():
-    """Remove test projects if they are found in the database."""
-    project1 = Project.query.filter_by(name='project1').first()
-    project2 = Project.query.filter_by(name='project2').first()
-    project3 = Project.query.filter_by(name='project3').first()
-    test_projects = [project1, project2, project3]
-    for project in test_projects:
-        try:
-            db.session.delete(project)
-            db.session.commit()
-        except:
-            pass
-    db.session.close()
