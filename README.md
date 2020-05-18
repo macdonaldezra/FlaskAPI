@@ -15,24 +15,23 @@ is added.
    ....
 ```
 
-Installation & Testing
--------------------------
+### Install & Run
+-----------------
+```> python -m venv ./env/
+> source env/bin/activate
+> python -m pip install -r requirements.txt
+> export FLASK_ENV=development
+> flask run
+```
 
-#### (i) Create & activate a Python v3.6+ virtual environment
-python -m venv ./env/
-source env/bin/activate
+### Test and show coverage
+-------------------------------
+```> python -m pytest tests/
+> python -m pip install coverage
+> coverage run -m ptest tests/
+> coverage report -m *.py main/*.py
+```
 
-#### (ii) Install requirements and set environment variables
-pip install -r requirements.txt
-export FLASK_ENV=development
-
-#### (iii) Run tests
-python -m pytest tests/
-
-#### (iv) Run test coverage
-pip install coverage
-coverage run -m ptest tests/
-coverage report -m *.py main/*.py
 
 #### Additional Notes:
 This application requires PostrgreSQL
