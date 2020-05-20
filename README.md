@@ -1,7 +1,8 @@
-FlaskUser v1.0
---------------
+FlaskUser
+---------
 
-An API template for Flask.
+An API template written in Flask with user authentication, session management using Redis,
+and Client and Project management functionality built in. Project uses 
 User authentication implemented with sessions and additional example user functionality
 is added.
 
