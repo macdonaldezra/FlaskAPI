@@ -1,3 +1,4 @@
+import os
 import json
 import sys
 import unittest
@@ -20,6 +21,7 @@ class MainUserTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        os.environ['FLASK_ENV'] = 'testing'
         cls.app = create_app()
         cls.client = cls.app.test_client
         cls.app_context = cls.app.app_context()

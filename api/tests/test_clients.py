@@ -1,3 +1,4 @@
+import os
 import sys
 import unittest
 
@@ -21,12 +22,12 @@ class ClientTestCase(unittest.TestCase):
    
     @classmethod
     def setUpClass(cls):
+        os.environ['FLASK_ENV'] = 'testing'
         cls.app = create_app()
         cls.client = cls.app.test_client
         cls.app_context = cls.app.app_context()
         cls.app_context.push()
         with cls.app.app_context():
-            db.session.close()
             db.create_all()
             addTestUsers()
             addTestClients()
