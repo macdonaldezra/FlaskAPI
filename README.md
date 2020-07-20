@@ -26,9 +26,11 @@ Installation & Testing
 ```
 
 #### (ii) Install requirements and set environment variables
-```> pip install -r requirements.txt
+```
+> pip install -r requirements.txt
 > export FLASK_ENV=development
-> export FLASK_APP=run.py```
+> export FLASK_APP=run.py
+```
 
 #### (iii) Run tests
 `> python -m pytest tests/`
