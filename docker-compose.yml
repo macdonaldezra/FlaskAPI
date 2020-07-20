@@ -1,0 +1,61 @@
+version: "3.0"
+
+services:
+    api:
+        build:
+            context: ./api/
+            dockerfile: Dockerfile
+        ports: 
+            - '8080:8080'
+        environment:
+            - FLASK_APP=run.py
+            - FLASK_ENV=production
+            - DEBUG=False
+            - REDIS_HOST=host.docker.internal
+            - REDIS_PORT=6379
+            - SESSION_COOKIE_HTTP_ONLY=
+            - SESSION_PERMANENT=1
+            - SESSION_FILE_THRESHOLD=1000
+            - SECRET_KEY=$SECRET_KEY
+            - POSTGRES_HOST=host.docker.internal
+            - POSTGRES_PASSWORD=$PG_PASSWORD
+            - POSTGRES_USERNAME=$PG_USERNAME
+            - POSTGRES_DB_NAME=$PG_DB
+        volumes:
+            - api:/var/www/html
+        depends_on:
+            - redis
+            - postgres
+        networks:
+            - sdnet
+
+    redis:
+        image: redis:alpine
+        ports:
+            - '6379:6379'
+        volumes:
+            - redis:/data
+        networks:
+            - sdnet
+ 
+    postgres:
+        image: postgres:latest
+        ports:
+            - '5432:5432'
+        environment:
+            - POSTGRES_USER=$PG_USERNAME
+            - POSTGRES_DB=$PG_DB
+            - POSTGRES_PASSWORD=$PG_PASSWORD
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        networks:
+            - sdnet
+
+volumes:
+    redis:
+    postgres:
+    api:
+
+networks:
+    sdnet:
+        driver: bridge
